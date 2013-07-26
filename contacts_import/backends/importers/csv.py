@@ -6,6 +6,8 @@ from django import forms
 
 from contacts_import.backends.importers.base import Importer
 
+import codecs
+
 
 def guess_email(entry):
     if "E-mail Address" in entry: # outlook
@@ -36,7 +38,8 @@ class CSVImporter(Importer):
     form_class = CSVImportForm
     
     def handle(self, form):
-        for entry in csv.DictReader(form.cleaned_data["file"]):
+        encoded_file = codecs.EncodedFile(form.cleaned_data["file"],"iso-8859-1")
+        for entry in csv.DictReader(encoded_file):
             email = guess_email(entry)
             name = guess_name(entry)
             if email and name:
